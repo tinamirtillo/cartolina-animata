@@ -52,12 +52,13 @@
   .message{font-size:clamp(22px,3vw,28px); line-height:1.5; margin-top:16px; display:none}
   .message.show{display:block; animation: pop .6s ease}
   @keyframes pop{0%{transform:scale(.98); opacity:0} 100%{transform:scale(1); opacity:1}}
+  @keyframes floaty{0%{transform:translateY(0)} 50%{transform:translateY(-6px)} 100%{transform:translateY(0)} }
 
   /* Character block */
   .characters{position:relative; margin-top:18px; display:flex; justify-content:center; align-items:flex-end; gap:24px; flex-wrap:wrap}
-  .char{position:relative; width:min(220px,40vw); text-align:center}
+  .char{position:relative; width:min(220px,40vw); text-align:center; display:flex; flex-direction:column; align-items:center}
   .char img{width:100%; height:auto; object-fit:contain; filter: drop-shadow(0 8px 14px rgba(0,0,0,.18));}
-  .label{position:absolute; top:-16px; left:50%; transform:translateX(-50%); background:rgba(255,255,255,.85); backdrop-filter:blur(8px); padding:8px 14px; border-radius:999px; font-family:'Quicksand','Zen Maru Gothic',system-ui,sans-serif; font-weight:700; letter-spacing:.3px}
+  .label{position:static; margin-bottom:10px; background:rgba(255,255,255,.9); backdrop-filter:blur(8px); padding:8px 14px; border-radius:999px; font-family:'Quicksand','Zen Maru Gothic',system-ui,sans-serif; font-weight:700; letter-spacing:.3px; box-shadow:0 2px 8px rgba(0,0,0,.08); text-shadow:0 1px 0 #fff, 0 0 6px rgba(255,255,255,.9); animation: floaty 3.6s ease-in-out infinite}
 
   /* Effects layers */
   #fw,#confetti{position:fixed; inset:0; pointer-events:none; z-index:4}
@@ -196,17 +197,13 @@ applyLang();
     img.className = 'flake';
     img.src = IMG_URL;
     img.alt = 'Cinnamoroll';
-    // size & alpha
     const size = 24 + Math.random()*20; // 24–44 px
     wrap.style.setProperty('--dx', (10 + Math.random()*30)+'px'); // sway amplitude
     img.style.setProperty('--size', size+'px');
     img.style.setProperty('--alpha', (0.6 + Math.random()*0.4).toString());
-
-    // position & animation
     wrap.style.left = Math.random()*vw() + 'px';
     wrap.style.animation = `sway ${3 + Math.random()*4}s ease-in-out ${Math.random()*6}s infinite`;
     img.style.animation = `fall ${8 + Math.random()*10}s linear ${Math.random()*8}s infinite`;
-
     wrap.appendChild(img);
     SNOW.appendChild(wrap);
   }

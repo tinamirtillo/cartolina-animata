@@ -59,8 +59,15 @@
   .char img{width:100%; height:auto; object-fit:contain; filter: drop-shadow(0 8px 14px rgba(0,0,0,.18));}
   .label{position:absolute; top:-16px; left:50%; transform:translateX(-50%); background:rgba(255,255,255,.85); backdrop-filter:blur(8px); padding:8px 14px; border-radius:999px; font-family:'Quicksand','Zen Maru Gothic',system-ui,sans-serif; font-weight:700; letter-spacing:.3px}
 
-  /* Fireworks canvas overlays */
+  /* Effects layers */
   #fw,#confetti{position:fixed; inset:0; pointer-events:none; z-index:4}
+
+  /* Cinnamoroll snow */
+  #snow{position:fixed; inset:0; pointer-events:none; z-index:2; overflow:hidden}
+  .flake-wrap{position:absolute; top:-10vh; will-change: transform;}
+  .flake{width: var(--size,32px); height:auto; opacity: var(--alpha,.9); filter: drop-shadow(0 2px 4px rgba(0,0,0,.1));}
+  @keyframes fall { from{ transform: translateY(-10vh);} to{ transform: translateY(110vh);} }
+  @keyframes sway { 0%{ transform: translateX(0);} 50%{ transform: translateX(var(--dx, 24px));} 100%{ transform: translateX(0);} }
 
   /* Footer note */
   .note{position:fixed; bottom:10px; right:12px; font-size:12px; opacity:.7}
@@ -77,6 +84,9 @@
   <div class="cloud a" style="--s:1.0"></div>
   <div class="cloud b" style="--s:1.2"></div>
   <div class="cloud c" style="--s:0.9"></div>
+
+  <!-- Cinnamoroll snow layer -->
+  <div id="snow" aria-hidden="true"></div>
 
   <!-- Canvases for effects -->
   <canvas id="fw"></canvas>
@@ -104,11 +114,11 @@
       <div class="characters" aria-label="Rappresentazioni Sanrio">
         <figure class="char">
           <div class="label">Martina (Tina)</div>
-          <img src="https://static.wikia.nocookie.net/hellokitty/images/e/e8/Poron.png/revision/latest?cb=20230214024157" alt="Poron (Sanrio)" />
+          <img src="./tina.png" alt="Poron (Sanrio)" />
         </figure>
         <figure class="char">
           <div class="label">Ayaka</div>
-          <img src="https://static.wikia.nocookie.net/hellokitty/images/b/bf/Sanrio_Characters_Hannari_Komachi_Image006.png/revision/latest?cb=20170508231819" alt="Hannari Komachi (Sanrio)" />
+          <img src="./aya.png" alt="Hannari Komachi (Sanrio)" />
         </figure>
       </div>
     </section>
@@ -122,10 +132,10 @@ const CONFIG = {
   toName: "Ayaka",            // Nome destinataria (mostra "___ さんへ" se vuoto)
   titleJA: "小さなサプライズ ✨",
   subtitleJA: "クリックして開いてください",
-  messageJA: "出会ってくれてありがとう、あやかさん。これからもよろしくね！\nマルティナより 💐",
+  messageJA: "お誕生日おめでとう、あやかさん！\n出会ってくれてありがとう。これからもよろしくね。\nマルティナより 💐",
   titleIT: "Una piccola sorpresa ✨",
   subtitleIT: "Clicca per aprire",
-  messageIT: "Grazie, Ayaka, per la tua amicizia. Con affetto, Martina 💐"
+  messageIT: "Buon compleanno, Ayaka!\nGrazie per la tua amicizia. Con affetto, Martina 💐"
 };
 
 // ==== STARFIELD ==============================================================
@@ -171,6 +181,36 @@ function applyLang(){
 document.getElementById('langJa').addEventListener('click',()=>{currentLang='ja'; applyLang();});
 document.getElementById('langIt').addEventListener('click',()=>{currentLang='it'; applyLang();});
 applyLang();
+
+// ==== CINNAMOROLL SNOW (small and many) =====================================
+(function cinnamorollSnow(){
+  const SNOW = document.getElementById('snow');
+  const IMG_URL = "https://www.pngall.com/wp-content/uploads/13/Cinnamoroll-PNG-Pic.png";
+  const COUNT = 220; // tantissimi!
+  const vw = () => Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+
+  for(let i=0;i<COUNT;i++){
+    const wrap = document.createElement('div');
+    wrap.className = 'flake-wrap';
+    const img = document.createElement('img');
+    img.className = 'flake';
+    img.src = IMG_URL;
+    img.alt = 'Cinnamoroll';
+    // size & alpha
+    const size = 24 + Math.random()*20; // 24–44 px
+    wrap.style.setProperty('--dx', (10 + Math.random()*30)+'px'); // sway amplitude
+    img.style.setProperty('--size', size+'px');
+    img.style.setProperty('--alpha', (0.6 + Math.random()*0.4).toString());
+
+    // position & animation
+    wrap.style.left = Math.random()*vw() + 'px';
+    wrap.style.animation = `sway ${3 + Math.random()*4}s ease-in-out ${Math.random()*6}s infinite`;
+    img.style.animation = `fall ${8 + Math.random()*10}s linear ${Math.random()*8}s infinite`;
+
+    wrap.appendChild(img);
+    SNOW.appendChild(wrap);
+  }
+})();
 
 // ==== REVEAL: CONFETTI + FIREWORKS ==========================================
 const fw = document.getElementById('fw');
